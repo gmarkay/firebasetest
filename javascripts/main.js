@@ -19,19 +19,7 @@ function getCats() {
   });
 }
 
-function addCategory(newCat) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: `${fbURL}/categories.json`,
-      method: "POST",
-      data: JSON.stringify(newCat)
-    }).done(newCat => {
-      // console.log(catId);
-      listCats(newCat);
 
-    });
-  });
-}
 $("#addCategory").click(function() {
   console.log("addCat called");
 
@@ -86,7 +74,7 @@ function addCustomer(newCustomer) {
 function getActiveCustomers() {
   return new Promise((resolve, reject) => {
     $.ajax({
-      url: `https://newproj-d27fa.firebaseio.com/customers.json?orderBy="name"&equalTo=true`
+      url: `https://newproj-d27fa.firebaseio.com/customers.json?orderBy="active"&equalTo=true`
     }).done(activeCusts => {
       console.log(activeCusts);
     });
@@ -100,7 +88,9 @@ function listCats(catData) {
   console.log("cats", catData);
   let catsArr = [];
   let keys = Object.keys(catData);
+  console.log(keys, 'there are the keys');
   keys.forEach(key => {
+    console.log(catData, 'catData');
     catData[key].id = key;
     catsArr.push(catData[key]);
   });
@@ -109,6 +99,7 @@ function listCats(catData) {
   catsArr.forEach(cat => {
     $("#categories").append(
       `<h3>${cat.name}</h3>
+      <p> ${cat.description}</p>
       <input type="text" class="catForm" placeholder="description">
       <button id="${cat.id}" class="updateCat">updateCat</button>
         <button id="${
@@ -117,10 +108,25 @@ function listCats(catData) {
     );
   });
 }
-
+const doTheListing = () => {
 getCats().then(catData => {
   listCats(catData);
 });
+};
+function addCategory(newCat) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${fbURL}/categories.json`,
+      method: "POST",
+      data: JSON.stringify(newCat)
+    }).done(category => {
+      // console.log(catId);
+      doTheListing();
+
+    });
+  });
+}
+doTheListing();
 
 $(document).on("click", ".deleteCat", function() {
   let catId = $(this).attr("id");
