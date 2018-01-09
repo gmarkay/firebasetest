@@ -1,5 +1,5 @@
 "use strict";
-
+const customers = require('./customers');
 const fbURL = "https://newproj-d27fa.firebaseio.com";
 
 
@@ -59,42 +59,21 @@ function deleteCat(id) {
   });
 }
 
-function addCustomer(newCustomer) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: `${fbURL}/customers.json`,
-      method: "POST",
-      data: JSON.stringify(newCustomer)
-    }).done(customerId => {
-      console.log(customerId);
-    });
-  });
-}
 
-function getActiveCustomers() {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: `https://newproj-d27fa.firebaseio.com/customers.json?orderBy="active"&equalTo=true`
-    }).done(activeCusts => {
-      console.log(activeCusts);
-    });
-  });
-}
-getActiveCustomers();
 
 // end of FB module
 
 function listCats(catData) {
-  console.log("cats", catData);
+  // console.log("cats", catData);
   let catsArr = [];
   let keys = Object.keys(catData);
-  console.log(keys, 'there are the keys');
+  // console.log(keys, 'there are the keys');
   keys.forEach(key => {
-    console.log(catData, 'catData');
+    // console.log(catData, 'catData');
     catData[key].id = key;
     catsArr.push(catData[key]);
   });
-  console.log(catsArr);
+  // console.log(catsArr);
   $("#categories").html("");
   catsArr.forEach(cat => {
     $("#categories").append(
@@ -108,11 +87,13 @@ function listCats(catData) {
     );
   });
 }
-const doTheListing = () => {
+
+const getAndListCats = () => {
 getCats().then(catData => {
   listCats(catData);
 });
 };
+
 function addCategory(newCat) {
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -121,16 +102,16 @@ function addCategory(newCat) {
       data: JSON.stringify(newCat)
     }).done(category => {
       // console.log(catId);
-      doTheListing();
+      getAndListCats();
 
     });
   });
 }
-doTheListing();
+getAndListCats();
 
 $(document).on("click", ".deleteCat", function() {
   let catId = $(this).attr("id");
-  console.log("catId", catId);
+  // console.log("catId", catId);
   deleteCat(catId)
     .then(() => {
       alert("Category deleted");
@@ -144,20 +125,9 @@ $(document).on("click", ".deleteCat", function() {
     });
 });
 
-$("#addCustomer").click(function() {
-  console.log("addCust called");
-
-  let custObj = {
-    age: $("#custAge").val(),
-    name: $("#custName").val(),
-    member_level: $("#custLevel").val(),
-    active: true
-  };
-  addCustomer(custObj);
-});
 
 $(document).on("click", ".updateCat", function(){
-  console.log('updateCat clicked');
+  // console.log('updateCat clicked');
 
   let id = $(this).attr("id");
   updateCat(id, $(this).prev(".catForm").val());
