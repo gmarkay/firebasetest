@@ -2,7 +2,11 @@
 const customers = require('./customers');
 const fbURL = "https://newproj-d27fa.firebaseio.com";
 
-
+const getAndListCats = () => {
+  getCats().then(catData => {
+    listCats(catData);
+  });
+  };
 // firebase module
 function getCats() {
   return new Promise((resolve, reject) => {
@@ -37,7 +41,7 @@ function updateCat(id, description) {
       method: "PATCH",
       data: JSON.stringify({ description })
     }).done(data => {
-      console.log("updated obj", data);
+      getAndListCats();
     });
   });
 }
@@ -89,11 +93,7 @@ function listCats(catData) {
   });
 }
 
-const getAndListCats = () => {
-getCats().then(catData => {
-  listCats(catData);
-});
-};
+
 
 function addCategory(newCat) {
   return new Promise((resolve, reject) => {

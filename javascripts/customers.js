@@ -2,6 +2,12 @@
 
 const fbURL = "https://newproj-d27fa.firebaseio.com";
 
+const getAndListCusts = () => {
+  getActiveCustomers().then(custData => {
+    listCustomers(custData);
+  });
+};
+
 function getActiveCustomers() {
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -37,7 +43,7 @@ function updateCust(id, member_level) {
       method: "PATCH",
       data: JSON.stringify({ member_level })
     }).done(data => {
-      console.log("updated obj", data);
+        getAndListCusts();
     });
   });
 }
@@ -88,11 +94,7 @@ function listCustomers(custData) {
   });
 }
 
-const getAndListCusts = () => {
-  getActiveCustomers().then(custData => {
-    listCustomers(custData);
-  });
-};
+
 
 function addCustomer(newCust) {
   return new Promise((resolve, reject) => {
