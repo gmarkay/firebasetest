@@ -21,7 +21,6 @@ function getCats() {
 
 
 $("#addCategory").click(function() {
-  console.log("addCat called");
 
   let custObj = {
     name: $("#catName").val(),
@@ -66,6 +65,7 @@ function deleteCat(id) {
 function listCats(catData) {
   // console.log("cats", catData);
   let catsArr = [];
+  if(catData){
   let keys = Object.keys(catData);
   // console.log(keys, 'there are the keys');
   keys.forEach(key => {
@@ -73,6 +73,7 @@ function listCats(catData) {
     catData[key].id = key;
     catsArr.push(catData[key]);
   });
+}
   // console.log(catsArr);
   $("#categories").html("");
   catsArr.forEach(cat => {

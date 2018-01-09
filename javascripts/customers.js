@@ -8,15 +8,15 @@ function getActiveCustomers() {
       url: `https://newproj-d27fa.firebaseio.com/customers.json?orderBy="active"&equalTo=true`
     }).done(activeCusts => {
       resolve(activeCusts);
-    }).fail(error => {
-      console.log('therewas an error', error.statusText);
-
-    });
+    })
+      .fail(error => {
+        console.log('therewas an error', error.statusText);
+      });
   });
 }
-// getActiveCustomers();
 
-$("#addCustomer").click(function() {
+
+$("#addCustomer").click(function () {
 
   let custObj = {
     age: $("#custAge").val(),
@@ -27,7 +27,21 @@ $("#addCustomer").click(function() {
   addCustomer(custObj);
 });
 
+
 //update
+
+function updateCust(id, member_level) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `${fbURL}/customers/${id}.json`,
+      method: "PATCH",
+      data: JSON.stringify({ member_level })
+    }).done(data => {
+      console.log("updated obj", data);
+    });
+  });
+}
+
 //delete
 
 function deleteCust(id) {
@@ -46,34 +60,37 @@ function deleteCust(id) {
       });
   });
 }
+
+
 function listCustomers(custData) {
   // console.log("custs", custData);
   let custArray = [];
-  let keys = Object.keys(custData);
-  console.log(keys, 'there are the cust keys');
-  keys.forEach(key => {
-    custData[key].id = key;
-    console.log(custData[key], 'custData');
+  if (custData) {
 
-    custArray.push(custData[key]);
-  });
+    let keys = Object.keys(custData);
+    keys.forEach(key => {
+      custData[key].id = key;
+      custArray.push(custData[key]);
+    });
+  }
   // console.log(custArray);
   $("#customers").html("");
   custArray.forEach(cust => {
     $("#customers").append(
       `<h3>${cust.name}</h3>
-      <p> ${cust.description}</p>
-      <input type="text" class="custForm" placeholder="description">
+      <p> ${cust.age}</p>
+      <p> ${cust.member_level}</p>
+      <input type="text" class="custForm" placeholder="level">
       <button id="${cust.id}" class="updateCust">updateCat</button>
        <button id="${cust.id
-        }" class="deleteCust">delete</button>`
+      }" class="deleteCust">delete</button>`
     );
   });
 }
 
 const getAndListCusts = () => {
   getActiveCustomers().then(custData => {
-      listCustomers(custData);
+    listCustomers(custData);
   });
 };
 
@@ -83,7 +100,7 @@ function addCustomer(newCust) {
       url: `${fbURL}/customers.json`,
       method: "POST",
       data: JSON.stringify(newCust)
-    }).done(category => {
+    }).done(customer => {
       // console.log(catId);
       getAndListCusts();
     });
@@ -91,7 +108,7 @@ function addCustomer(newCust) {
 }
 getAndListCusts();
 
-$(document).on("click", ".deleteCust", function() {
+$(document).on("click", ".deleteCust", function () {
   let custId = $(this).attr("id");
   // console.log("custId", custId);
   deleteCust(custId)
@@ -107,26 +124,10 @@ $(document).on("click", ".deleteCust", function() {
     });
 });
 
-$("#addCustomer").click(function() {
-  console.log("addCust called");
 
-  let custObj = {
-    age: $("#custAge").val(),
-    name: $("#custName").val(),
-    member_level: $("#custLevel").val(),
-    active: true
-  };
-  addCustomer(custObj);
+$(document).on("click", ".updateCust", function(){
+  // console.log('updateCat clicked');
+
+  let id = $(this).attr("id");
+  updateCust(id, $(this).prev(".custForm").val());
 });
-
-// function addCustomer(newCustomer) {
-//   return new Promise((resolve, reject) => {
-//     $.ajax({
-//       url: `${fbURL}/customers.json`,
-//       method: "POST",
-//       data: JSON.stringify(newCustomer)
-//     }).done(customerId => {
-//       console.log(customerId);
-//     });
-//   });
-// }
